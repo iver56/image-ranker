@@ -109,3 +109,6 @@ venv.bak/
 
 # Generated data
 data/*.png
+
+# Trained model(s)
+models/*.h5
