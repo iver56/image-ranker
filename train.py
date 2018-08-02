@@ -88,7 +88,7 @@ if __name__ == "__main__":
     # Compile the model
     final_model.compile(
         loss="categorical_crossentropy",
-        optimizer=optimizers.SGD(lr=0.0001, momentum=0.9),
+        optimizer=optimizers.SGD(momentum=0.9),
         metrics=["accuracy"],
     )
 
