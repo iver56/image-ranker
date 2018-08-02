@@ -6,8 +6,8 @@ from PIL import Image
 from tqdm import tqdm
 
 # Generate and store images
-for i in tqdm(range(2000)):
-    wavelength = 4 + 0.1 * i
+for i in tqdm(range(50)):
+    wavelength = 4 + 0.1 * i * i
     frequency = 1 / wavelength
     shape = (224, 224)
     img = np.zeros(shape, dtype=np.float32)
