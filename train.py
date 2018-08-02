@@ -77,6 +77,7 @@ if __name__ == "__main__":
         submodel_outputs.append(x)
 
     merged_output = Concatenate()(submodel_outputs)
+    merged_output = Dense(32, activation="relu")(merged_output)
     merged_output = Dense(2, activation="softmax")(merged_output)
 
     # Create the final model
