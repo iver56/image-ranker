@@ -5,10 +5,11 @@ import numpy as np
 from PIL import Image
 from keras import optimizers
 from keras.applications.mobilenet import MobileNet
+from keras.callbacks import ReduceLROnPlateau
 from keras.layers import Flatten, Dense, Concatenate
 from keras.models import Model
 from tqdm import tqdm
-
+from keras import backend as K
 from utils import get_image_file_paths
 
 img_width, img_height = 224, 224
@@ -21,17 +22,11 @@ def preprocess_input(np_img):
     return np_img
 
 
-if __name__ == "__main__":
-    random.seed(42)
-
+def generate_examples(num_examples):
     x1_data = []
     x2_data = []
     y_data = []
 
-    image_file_paths = get_image_file_paths()
-    num_examples = 5000  # number of comparisons
-
-    # Load all images into memory - only works well for small amounts of data
     for i in tqdm(range(num_examples), desc="Preparing data"):
         # Pick two images at random
         image1_file_path, image2_file_path = random.sample(image_file_paths, 2)
@@ -52,6 +47,13 @@ if __name__ == "__main__":
     x1_data = np.array(x1_data)
     x2_data = np.array(x2_data)
     y_data = np.array(y_data)
+    return [x1_data, x2_data], y_data
+
+
+if __name__ == "__main__":
+    random.seed(42)
+
+    image_file_paths = get_image_file_paths()
 
     submodel_inputs = []
     submodel_outputs = []
@@ -64,8 +66,9 @@ if __name__ == "__main__":
             input_shape=(img_width, img_height, 3),
         )
         for layer in submodel.layers:
-            # Make layer names unique
+            # Make layer name unique
             layer.name = "submodel{}_{}".format(i, layer.name)
+            layer.trainable = True
 
         x = submodel.output
         x = Flatten()(x)
@@ -84,21 +87,22 @@ if __name__ == "__main__":
     # Compile the model
     final_model.compile(
         loss="categorical_crossentropy",
-        optimizer=optimizers.SGD(momentum=0.9),
+        optimizer=optimizers.SGD(lr=0.0001, momentum=0.9),
         metrics=["accuracy"],
     )
 
-    steps_per_epoch = 256
-    max_num_epochs = 20
+    num_examples_per_epoch = 512
+    num_epochs = 50
 
     # Train the model
-    for i in range(max_num_epochs):
-        if i * 256 >= num_examples:
-            break
-
+    for i in range(num_epochs):
+        x_data, y_data = generate_examples(num_examples_per_epoch)
+        new_lr = 0.001 / (1 + i)
+        print('Learning rate: {0:.6f}'.format(new_lr))
+        K.set_value(final_model.optimizer.lr, new_lr)
         final_model.fit(
-            [x1_data[i * 256: (i + 1) * 256], x2_data[i * 256: (i + 1) * 256]],
-            y_data[i * 256: (i + 1) * 256],
+            x_data,
+            y_data,
             batch_size=16,
             shuffle=False,
         )
