@@ -3,13 +3,13 @@ import random
 
 import numpy as np
 from PIL import Image
+from keras import backend as K
 from keras import optimizers
-from keras.applications.mobilenet import MobileNet
-from keras.callbacks import ReduceLROnPlateau
+from keras.applications import MobileNet
 from keras.layers import Flatten, Dense, Concatenate
 from keras.models import Model
 from tqdm import tqdm
-from keras import backend as K
+
 from utils import get_image_file_paths
 
 img_width, img_height = 224, 224
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     num_submodels = 2
     for i in range(num_submodels):
         submodel = MobileNet(
-            alpha=0.25,
+            alpha=0.5,
             weights="imagenet",
             include_top=False,
             input_shape=(img_width, img_height, 3),
@@ -72,12 +72,12 @@ if __name__ == "__main__":
 
         x = submodel.output
         x = Flatten()(x)
-        x = Dense(32, activation="relu")(x)
+        x = Dense(100, activation="relu")(x)
         submodel_inputs.append(submodel.input)
         submodel_outputs.append(x)
 
     merged_output = Concatenate()(submodel_outputs)
-    merged_output = Dense(32, activation="relu")(merged_output)
+    merged_output = Dense(100, activation="relu")(merged_output)
     merged_output = Dense(2, activation="softmax")(merged_output)
 
     # Create the final model
@@ -92,13 +92,13 @@ if __name__ == "__main__":
         metrics=["accuracy"],
     )
 
-    num_examples_per_epoch = 512
-    num_epochs = 50
+    num_examples_per_epoch = 1024
+    num_epochs = 20
 
     # Train the model
     for i in range(num_epochs):
         x_data, y_data = generate_examples(num_examples_per_epoch)
-        new_lr = 0.001 / (1 + i)
+        new_lr = 0.002 / (2 + i)
         print('Learning rate: {0:.6f}'.format(new_lr))
         K.set_value(final_model.optimizer.lr, new_lr)
         final_model.fit(
