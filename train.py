@@ -60,7 +60,7 @@ if __name__ == "__main__":
     num_submodels = 2
     for i in range(num_submodels):
         submodel = MobileNet(
-            alpha=0.5,
+            alpha=0.75,
             weights="imagenet",
             include_top=False,
             input_shape=(img_width, img_height, 3),
