@@ -16,7 +16,7 @@ def get_font(font_size):
 
 
 # Generate and store images
-for i in tqdm(range(50)):
+for i in tqdm(range(1000)):
 
     image = Image.new("RGB", shape, (255, 255, 255))
 
