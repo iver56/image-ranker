@@ -4,7 +4,8 @@ channels:
 dependencies:
 - h5py>=2.7,<3
 - hdf5>=1.8,<2
-- mkl=2017.0.3
+- mkl>=2018,<=2019
+- numpy>=1.13.3,<=1.15.5
 - pip=10.0.1
 - python=3.6.6
 - scipy=0.19.1
