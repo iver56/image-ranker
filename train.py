@@ -40,8 +40,8 @@ def generate_examples(num_examples):
         x2_data.append(img2)
 
         # Append target vector
-        is_2nd_wavelength_longer = image2_file_path > image1_file_path
-        output_vector = [0, 1] if is_2nd_wavelength_longer else [1, 0]
+        is_2nd_number_greater = image2_file_path > image1_file_path
+        output_vector = [0, 1] if is_2nd_number_greater else [1, 0]
         y_data.append(output_vector)
 
     x1_data = np.array(x1_data)

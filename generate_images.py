@@ -4,7 +4,7 @@ import math
 from PIL import Image, ImageDraw, ImageFont
 from tqdm import tqdm
 
-shape = (224, 224)
+size = (224, 224)
 
 fonts = {}
 
@@ -18,16 +18,16 @@ def get_font(font_size):
 # Generate and store images
 for i in tqdm(range(1000)):
 
-    image = Image.new("RGB", shape, (255, 255, 255))
+    image = Image.new("RGB", size, (255, 255, 255))
 
     # Drawing context
     ctx = ImageDraw.Draw(image)
 
-    font_size = math.ceil(image.size[0] / 4)
+    font_size = math.ceil(image.size[0] / 2)
     font = get_font(font_size)
 
     ctx.text(
-        (font_size, int(image.size[1] - 1.666 * font_size)),
+        (size[0] / 2 - 0.6 * font_size, int(image.size[1] - 1.5 * font_size)),
         str(i),
         font=font,
         fill=(20, 20, 20, 20),
